@@ -1,6 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 import seaborn as sns
+import numpy as np
 
 def get_flight_seasonality_graph(data, time_column, grouping_column):
     """Generates line graph with count of values in *data* by *time_column* and *grouping_column*.
@@ -35,3 +37,26 @@ def get_period_day(x):
     if x.hour >= 12 and x.hour <= 18:
         return 'afternoon'
     return 'night'
+
+def get_delay_rate_graph(data, grouping_column):
+    """Generates bar graph with delay rate of flight in *data* by *grouping_column*.
+
+    :param data: Data to be plotted. Must have "delay_15" and *grouping_column* among columns.
+    :type data: DataFrame
+    :param grouping_column: Column of *data* to group delay rates by.
+    :type grouping_column: string
+    """
+    d = data.groupby(grouping_column, as_index = False).mean()[[grouping_column, 'delay_15']]
+    d['delay_15'] = d['delay_15']*100
+    
+    global_mean = np.nanmean(data['delay_15'])*100
+    
+    fig = sns.barplot(data = d.sort_values('delay_15', ascending = False), 
+                    x=grouping_column, y = 'delay_15')
+    fig.set_xticklabels(fig.get_xticklabels(), rotation=90)
+    fig.yaxis.set_major_formatter(mtick.PercentFormatter())
+    fig.axhline(global_mean)
+    fig.set_title(f"Proportion of Delayed Flights by {grouping_column}")
+    fig.set_ylabel("Proportion of Delayed Flights")
+    fig.set_xlabel(grouping_column)
+    plt.show()
