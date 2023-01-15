@@ -90,7 +90,7 @@ def encode_feats(encoder, feature_df):
     """
     return pd.DataFrame(data=encoder.transform(feature_df), columns=encoder.get_feature_names_out())
 
-def get_best_model_CV(X_train, y_train, classifier, param_grid, scoring = 'f1_micro', n_jobs = -1):
+def get_best_model_CV(X_train, y_train, classifier, param_grid, scoring = 'f1', n_jobs = -1):
     """Finds the best parameter combination in *param_grid* for *classifier* through cross validation.
 
     :param X_train: Input features for the model.
